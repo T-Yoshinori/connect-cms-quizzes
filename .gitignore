@@ -1,0 +1,9 @@
+/build/
+*.zip
+.env
+.env.*
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+*.bak
