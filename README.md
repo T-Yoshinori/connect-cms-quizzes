@@ -27,10 +27,10 @@ Connect-CMS向けの非公式小テストプラグインです。小テストの
 
 ## ダウンロード
 
-GitHub Releasesから次のファイルをダウンロードします。
+次のリンクからダウンロードします。
 
-- 標準版: `connect-cms-quizzes-0.9.0-beta.1.zip`
-- 数式入力支援オプション: `connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.1.zip`
+- [標準版 connect-cms-quizzes-0.9.0-beta.1.zip](downloads/connect-cms-quizzes-0.9.0-beta.1.zip)
+- [数式入力支援オプション connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.1.zip](downloads/connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.1.zip)
 
 標準版だけでも、WYSIWYGへLaTeXコードを直接入力してMathJaxで表示できます。オプション版は、数式入力ダイアログ、プレビュー、挿入ボタンを追加する場合だけ導入します。
 
