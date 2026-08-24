@@ -25,9 +25,20 @@ Connect-CMS向けの非公式小テストプラグインです。小テストの
 
 必ず検証環境で確認してから利用してください。本番環境へ導入する前に、ファイルとデータベースのバックアップを取得してください。
 
+## ソースコード
+
+標準版の実ファイルは、GitHub上で直接閲覧できます。
+
+- [プラグイン本体](app/Plugins/User/Quizzes)
+- [Model](app/Models/User/Quizzes)
+- [Migration](database/migrations)
+- [画面テンプレート](resources/views/plugins/user/quizzes)
+
+ルート直下の`app`、`database`、`resources`は、Connect-CMSへ重ねて配置するディレクトリ構成と同じです。配布用の標準ZIPも、このソースコードから生成します。
+
 ## ダウンロード
 
-次のリンクからダウンロードします。
+次の配布用ZIPをダウンロードしてください。
 
 - [標準版 connect-cms-quizzes-0.9.0-beta.1.zip](downloads/connect-cms-quizzes-0.9.0-beta.1.zip)
 - [数式入力支援オプション connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.1.zip](downloads/connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.1.zip)

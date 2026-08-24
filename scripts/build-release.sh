@@ -10,7 +10,9 @@ option_name="connect-cms-quizzes-math-editor-tools-option-${version}"
 rm -rf "${build_root}"
 mkdir -p "${build_root}/${standard_name}" "${build_root}/${option_name}"
 
-cp -a "${repo_root}/package/overlay/." "${build_root}/${standard_name}/"
+for source_dir in app database resources; do
+    cp -a "${repo_root}/${source_dir}" "${build_root}/${standard_name}/"
+done
 cp -a "${repo_root}/options/math-editor-tools/overlay/." "${build_root}/${option_name}/"
 
 cp "${repo_root}/README.md" "${repo_root}/LICENSE" "${repo_root}/CHANGELOG.md" \
