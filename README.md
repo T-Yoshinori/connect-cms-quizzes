@@ -38,7 +38,7 @@ Connect-CMS向けの非公式小テストプラグインです。小テストの
 
 ## ダウンロード
 
-インストールには、GitHub画面上部の「Code → Download ZIP」ではなく、次の配布用ZIPを使用してください。
+次の配布用ZIPをダウンロードしてください。
 
 - [標準版 connect-cms-quizzes-0.9.0-beta.1.zip](downloads/connect-cms-quizzes-0.9.0-beta.1.zip)
 - [数式入力支援オプション connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.1.zip](downloads/connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.1.zip)
