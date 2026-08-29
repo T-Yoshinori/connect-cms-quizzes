@@ -57,6 +57,13 @@
     }
     $selectedCategoryIds = array_map('intval', (array) $selectedCategoryIds);
 
+    $answerOrderFixed = (bool) old(
+        'answer_order_fixed',
+        is_null(optional($revision)->answer_order_fixed)
+            ? true
+            : optional($revision)->answer_order_fixed
+    );
+
     $normalPagePath = URL::to($page->permanent_link) . '#frame-' . $frame->id;
 @endphp
 
@@ -244,6 +251,38 @@
                     <i class="fas fa-plus"></i>
                     正解候補を追加
                 </button>
+
+                <div id="multiple-word-scoring-options" class="mt-4">
+                    <h5 class="h6">解答順の判定</h5>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input"
+                               type="radio"
+                               id="answer_order_fixed_1"
+                               name="answer_order_fixed"
+                               value="1"
+                               @if ($answerOrderFixed) checked @endif>
+                        <label class="form-check-label" for="answer_order_fixed_1">
+                            解答欄ごとに正解を判定する
+                        </label>
+                        <small class="form-text text-muted">
+                            空欄補充など、解答位置に意味がある問題で使用します。
+                        </small>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               id="answer_order_fixed_0"
+                               name="answer_order_fixed"
+                               value="0"
+                               @if (!$answerOrderFixed) checked @endif>
+                        <label class="form-check-label" for="answer_order_fixed_0">
+                            解答の順序を問わない
+                        </label>
+                        <small class="form-text text-muted">
+                            名称や項目を複数列挙する問題で使用します。同じ正解は重複して使用されません。
+                        </small>
+                    </div>
+                </div>
             </div>
 
             <div id="essay-options" class="question-option-panel border rounded p-3 mb-4">
@@ -414,6 +453,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     const choiceOptions = document.getElementById('choice-options');
     const wordOptions = document.getElementById('word-options');
+    const multipleWordScoringOptions = document.getElementById('multiple-word-scoring-options');
     const essayOptions = document.getElementById('essay-options');
     const choiceList = document.getElementById('choice-list');
     const answerList = document.getElementById('correct-answer-list');
@@ -422,6 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const type = typeSelect.value;
         choiceOptions.style.display = ['single_choice', 'multiple_choice'].includes(type) ? '' : 'none';
         wordOptions.style.display = ['word', 'multiple_word'].includes(type) ? '' : 'none';
+        multipleWordScoringOptions.style.display = type === 'multiple_word' ? '' : 'none';
         essayOptions.style.display = type === 'essay' ? '' : 'none';
 
         document.querySelectorAll('.answer-group-column').forEach(function (column) {
