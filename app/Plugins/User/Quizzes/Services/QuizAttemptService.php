@@ -259,6 +259,43 @@ class QuizAttemptService
     }
 
     /**
+     * 回答画面表示用Attemptを取得します。
+     *
+     * 制限時間超過後も、保存済み回答の提出導線を表示するために取得を許可します。
+     * 回答の保存可否はgetAnsweringAttempt()で引き続き厳格に判定します。
+     */
+    public function getAnswerDisplayAttempt($attempt_id, $user_id)
+    {
+        $attempt = $this->findOwnedAttempt($attempt_id, $user_id);
+
+        if ($attempt->status !== 'in_progress') {
+            throw ValidationException::withMessages([
+                'attempt' => 'この受験は回答を終了しています。',
+            ]);
+        }
+
+        return $attempt;
+    }
+
+    /**
+     * 提出可能なAttemptを取得します。
+     *
+     * 制限時間超過後は回答を変更できませんが、保存済み回答は提出できます。
+     */
+    public function getSubmittableAttempt($attempt_id, $user_id)
+    {
+        $attempt = $this->findOwnedAttempt($attempt_id, $user_id);
+
+        if ($attempt->status !== 'in_progress') {
+            throw ValidationException::withMessages([
+                'attempt' => 'この受験はすでに提出されています。',
+            ]);
+        }
+
+        return $attempt;
+    }
+
+    /**
      * 提出前確認用Attemptを取得します。
      */
     public function getReviewAttempt($attempt_id, $user_id)
