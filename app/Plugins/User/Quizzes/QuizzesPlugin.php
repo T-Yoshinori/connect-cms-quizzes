@@ -606,7 +606,7 @@ class QuizzesPlugin extends UserPluginBase
     {
         /** @var QuizAttemptService $service */
         $service = app(QuizAttemptService::class);
-        $attempt = $service->getAnsweringAttempt($attempt_id, Auth::id());
+        $attempt = $service->getAnswerDisplayAttempt($attempt_id, Auth::id());
         $this->ensureFrameQuiz($frame_id, $attempt->quiz_id);
 
         return $this->view('quizzes_answer', [
@@ -702,7 +702,7 @@ class QuizzesPlugin extends UserPluginBase
     {
         /** @var QuizAttemptService $attempt_service */
         $attempt_service = app(QuizAttemptService::class);
-        $answering_attempt = $attempt_service->getAnsweringAttempt(
+        $answering_attempt = $attempt_service->getSubmittableAttempt(
             $attempt_id,
             Auth::id()
         );
