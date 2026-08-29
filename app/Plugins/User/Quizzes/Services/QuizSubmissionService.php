@@ -308,17 +308,9 @@ class QuizSubmissionService
             ];
         }
 
-        $matched = 0;
         $total = $groups->count();
-
-        foreach ($groups->values() as $index => $answers) {
-            $input = $texts[$index] ?? '';
-            $normalized_input = $this->normalizeText(
-                $input,
-                $revision->normalization_options
-            );
-
-            $accepted = $answers
+        $normalized_groups = $groups->values()->map(function ($answers) use ($revision) {
+            return $answers
                 ->pluck('answer_text')
                 ->map(function ($text) use ($revision) {
                     return $this->normalizeText(
@@ -326,12 +318,27 @@ class QuizSubmissionService
                         $revision->normalization_options
                     );
                 })
+                ->unique()
+                ->values()
                 ->all();
+        })->all();
 
-            if (in_array($normalized_input, $accepted, true)) {
-                $matched++;
-            }
-        }
+        $normalized_inputs = array_map(function ($text) use ($revision) {
+            return $this->normalizeText(
+                $text,
+                $revision->normalization_options
+            );
+        }, $texts);
+
+        $matched = $revision->answer_order_fixed
+            ? $this->countOrderedMultipleWordMatches(
+                $normalized_inputs,
+                $normalized_groups
+            )
+            : $this->countUnorderedMultipleWordMatches(
+                $normalized_inputs,
+                $normalized_groups
+            );
 
         $score = round(
             ((float)$revision->points * $matched) / $total,
@@ -349,8 +356,98 @@ class QuizSubmissionService
         return [
             'score' => $score,
             'correctness' => $correctness,
-            'reason' => $matched . '件／' . $total . '件が正解です。',
+            'reason' => $matched . '件／' . $total . '件が正解です。'
+                . ($revision->answer_order_fixed ? '' : '（順不同）'),
         ];
+    }
+
+    private function countOrderedMultipleWordMatches(
+        array $inputs,
+        array $groups
+    ) {
+        $matched = 0;
+
+        foreach ($groups as $index => $accepted) {
+            $input = $inputs[$index] ?? '';
+
+            if ($input !== '' && in_array($input, $accepted, true)) {
+                $matched++;
+            }
+        }
+
+        return $matched;
+    }
+
+    /**
+     * 入力と正解グループの一対一対応について最大一致数を求めます。
+     * 同じ正解グループを複数の入力へ重複使用しません。
+     */
+    private function countUnorderedMultipleWordMatches(
+        array $inputs,
+        array $groups
+    ) {
+        $candidates = [];
+
+        foreach ($inputs as $input_index => $input) {
+            if ($input === '') {
+                $candidates[$input_index] = [];
+                continue;
+            }
+
+            $candidates[$input_index] = [];
+            foreach ($groups as $group_index => $accepted) {
+                if (in_array($input, $accepted, true)) {
+                    $candidates[$input_index][] = $group_index;
+                }
+            }
+        }
+
+        $group_matches = [];
+        $matched = 0;
+
+        foreach (array_keys($candidates) as $input_index) {
+            $visited_groups = [];
+            if ($this->assignMultipleWordMatch(
+                $input_index,
+                $candidates,
+                $group_matches,
+                $visited_groups
+            )) {
+                $matched++;
+            }
+        }
+
+        return $matched;
+    }
+
+    private function assignMultipleWordMatch(
+        $input_index,
+        array $candidates,
+        array &$group_matches,
+        array &$visited_groups
+    ) {
+        foreach ($candidates[$input_index] ?? [] as $group_index) {
+            if (!empty($visited_groups[$group_index])) {
+                continue;
+            }
+
+            $visited_groups[$group_index] = true;
+
+            if (
+                !array_key_exists($group_index, $group_matches)
+                || $this->assignMultipleWordMatch(
+                    $group_matches[$group_index],
+                    $candidates,
+                    $group_matches,
+                    $visited_groups
+                )
+            ) {
+                $group_matches[$group_index] = $input_index;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
