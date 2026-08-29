@@ -144,6 +144,14 @@
                 提出内容を確認する
                 <i class="fas fa-arrow-right"></i>
             </button>
+            <button class="btn btn-outline-secondary ml-2 mb-2"
+                    type="submit"
+                    name="after_save"
+                    value="interrupt"
+                    onclick="return confirm('受験を中断しても制限時間は止まりません。予定の制限時間を過ぎると回答できなくなります。現在の回答を保存して受験を中断しますか？');">
+                <i class="fas fa-pause"></i>
+                受験を中断する
+            </button>
         </div>
     </form>
 @endif

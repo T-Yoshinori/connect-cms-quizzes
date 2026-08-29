@@ -662,21 +662,37 @@ class QuizzesPlugin extends UserPluginBase
             );
         }
 
-        $request->flash_message = 'この画面の回答を保存しました。';
+        $after_save = $request->input('after_save');
+
+        $request->flash_message = $after_save === 'interrupt'
+            ? '回答を保存し、受験を中断しました。制限時間は継続しています。'
+            : 'この画面の回答を保存しました。';
+
+        if ($after_save === 'review') {
+            $redirect_path = url('/')
+                . '/plugin/quizzes/review/'
+                . $page_id . '/'
+                . $frame_id . '/'
+                . (int) $request->attempt_id
+                . '#frame-' . $frame_id;
+        } elseif ($after_save === 'interrupt') {
+            $redirect_path = url('/')
+                . '/plugin/quizzes/start/'
+                . $page_id . '/'
+                . $frame_id . '/'
+                . $attempt->quiz_id
+                . '#frame-' . $frame_id;
+        } else {
+            $redirect_path = url('/')
+                . '/plugin/quizzes/answer/'
+                . $page_id . '/'
+                . $frame_id . '/'
+                . (int) $request->attempt_id
+                . '#frame-' . $frame_id;
+        }
+
         $request->merge([
-            'redirect_path' => $request->input('after_save') === 'review'
-                ? url('/')
-                    . '/plugin/quizzes/review/'
-                    . $page_id . '/'
-                    . $frame_id . '/'
-                    . (int) $request->attempt_id
-                    . '#frame-' . $frame_id
-                : url('/')
-                    . '/plugin/quizzes/answer/'
-                    . $page_id . '/'
-                    . $frame_id . '/'
-                    . (int) $request->attempt_id
-                    . '#frame-' . $frame_id,
+            'redirect_path' => $redirect_path,
         ]);
     }
 
