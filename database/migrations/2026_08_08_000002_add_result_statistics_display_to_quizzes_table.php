@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('quizzes', function (Blueprint $table) {
+        Schema::table('yuyu_quizzes', function (Blueprint $table) {
             $table->boolean('show_average_score')
                 ->default(false)
                 ->after('show_user_answer');
@@ -26,7 +26,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('quizzes', function (Blueprint $table) {
+        Schema::table('yuyu_quizzes', function (Blueprint $table) {
             $table->dropColumn([
                 'show_average_score',
                 'show_highest_score',

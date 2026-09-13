@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('quiz_pages', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_pages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_id')->constrained('quizzes')->cascadeOnDelete();
+            $table->foreignId('quiz_id')->constrained('yuyu_quizzes')->cascadeOnDelete();
             $table->string('title')->nullable();
             $table->longText('description')->nullable();
             $table->unsignedInteger('sequence')->default(0);
@@ -16,5 +16,5 @@ return new class extends Migration {
             $table->index(['quiz_id','sequence']);
         });
     }
-    public function down(): void { Schema::dropIfExists('quiz_pages'); }
+    public function down(): void { Schema::dropIfExists('yuyu_quiz_pages'); }
 };

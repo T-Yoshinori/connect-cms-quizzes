@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('quizzes', function (Blueprint $table) {
+        Schema::table('yuyu_quizzes', function (Blueprint $table) {
             $table->string('question_order', 30)
                 ->default('registered')
                 ->after('result_display_timing');
@@ -23,7 +23,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('quizzes', function (Blueprint $table) {
+        Schema::table('yuyu_quizzes', function (Blueprint $table) {
             $table->dropColumn([
                 'question_order',
                 'question_display',

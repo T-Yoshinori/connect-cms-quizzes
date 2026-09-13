@@ -23,6 +23,8 @@ Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です�
 - Connect-CMS 1.39.0
 - PHP 8.1
 
+本配布物は新規インストール用です。既存のQuizzes環境の更新には使用しないでください。
+
 必ず検証環境で確認してから利用してください。本番環境へ導入する前に、ファイルとデータベースのバックアップを取得してください。
 
 ## ソースコード
@@ -49,12 +51,11 @@ Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です�
 
 1. Connect-CMSのファイルとデータベースをバックアップします。
 2. 標準版ZIPを展開します。
-3. ZIP内の`app`、`resources`、`database`をConnect-CMSのルートへ配置します。既存のQuizzesから更新する場合は、旧ディレクトリをバックアップ後に削除し、YuyuQuizzesディレクトリへ置き換えます。
+3. ZIP内の`app`、`resources`、`database`をConnect-CMSのルートへ配置します。
 4. Connect-CMSのルートで`php artisan migrate`を実行します。
 5. 必要に応じて`php artisan view:clear`を実行します。
 6. 管理画面で既存の小テストフレームがYuyuQuizzesとして表示されることを確認します。
 
-既存のQuizzesから更新する場合、Migrationが`plugins`、`frames`の識別子と`quizzes`・`quiz_*`全20テーブルをYuyuQuizzes専用名へ移行します。必ず事前にDBをバックアップしてください。
 
 オプション版はConnect-CMSの共通WYSIWYGを上書きします。導入前に`resources/views/plugins/common/wysiwyg.blade.php`を必ずバックアップしてください。
 

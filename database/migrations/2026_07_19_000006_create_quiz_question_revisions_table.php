@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('quiz_question_revisions', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_question_revisions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_question_id')->constrained('quiz_questions')->cascadeOnDelete();
+            $table->foreignId('quiz_question_id')->constrained('yuyu_quiz_questions')->cascadeOnDelete();
             $table->unsignedInteger('revision_no');
             $table->string('question_type', 30);
             $table->longText('question_text');
@@ -27,5 +27,5 @@ return new class extends Migration {
             $table->foreign('created_id')->references('id')->on('users')->nullOnDelete();
         });
     }
-    public function down(): void { Schema::dropIfExists('quiz_question_revisions'); }
+    public function down(): void { Schema::dropIfExists('yuyu_quiz_question_revisions'); }
 };

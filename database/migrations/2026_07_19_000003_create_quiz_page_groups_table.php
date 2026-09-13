@@ -5,11 +5,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('quiz_page_groups', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_page_groups', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('page_id');
             $table->unsignedInteger('frame_id');
-            $table->foreignId('quiz_id')->constrained('quizzes')->cascadeOnDelete();
+            $table->foreignId('quiz_id')->constrained('yuyu_quizzes')->cascadeOnDelete();
             $table->unsignedInteger('group_id');
             $table->timestamps();
             $table->unique(['page_id','frame_id','quiz_id','group_id'], 'quiz_page_groups_unique');
@@ -19,5 +19,5 @@ return new class extends Migration {
             $table->foreign('group_id')->references('id')->on('groups')->cascadeOnDelete();
         });
     }
-    public function down(): void { Schema::dropIfExists('quiz_page_groups'); }
+    public function down(): void { Schema::dropIfExists('yuyu_quiz_page_groups'); }
 };

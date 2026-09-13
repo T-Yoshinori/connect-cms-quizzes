@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('quizzes', function (Blueprint $table) {
+        Schema::table('yuyu_quizzes', function (Blueprint $table) {
             $table->boolean('show_score_distribution')
                 ->default(false)
                 ->after('show_participant_count');
@@ -17,7 +17,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('quizzes', function (Blueprint $table) {
+        Schema::table('yuyu_quizzes', function (Blueprint $table) {
             $table->dropColumn('show_score_distribution');
         });
     }
