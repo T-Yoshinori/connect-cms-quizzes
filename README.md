@@ -1,8 +1,8 @@
-# Connect-CMS Quizzes
+# Connect-CMS YuyuQuizzes
 
-Connect-CMS向けの非公式小テストプラグインです。小テストの作成、受験、自動採点・手動採点、結果集計、CSV出力、カテゴリー別評価を提供します。
+Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です。小テストの作成、受験、自動採点・手動採点、結果集計、CSV出力、カテゴリー別評価を提供します。
 
-> バージョン: 0.9.0-beta.3  
+> バージョン: 0.9.0-beta.4  
 > 開発・提供: ゆうゆう企画  
 > 状態: ベータ版
 
@@ -29,10 +29,10 @@ Connect-CMS向けの非公式小テストプラグインです。小テストの
 
 標準版の実ファイルは、GitHub上で直接閲覧できます。
 
-- [プラグイン本体](app/Plugins/User/Quizzes)
-- [Model](app/Models/User/Quizzes)
+- [プラグイン本体](app/Plugins/User/Yuyuquizzes)
+- [Model](app/Models/User/YuyuQuizzes)
 - [Migration](database/migrations)
-- [画面テンプレート](resources/views/plugins/user/quizzes)
+- [画面テンプレート](resources/views/plugins/user/yuyuquizzes)
 
 ルート直下の`app`、`database`、`resources`は、Connect-CMSへ重ねて配置するディレクトリ構成と同じです。配布用の標準ZIPも、このソースコードから生成します。
 
@@ -40,8 +40,8 @@ Connect-CMS向けの非公式小テストプラグインです。小テストの
 
 次の配布用ZIPをダウンロードしてください。
 
-- [標準版 connect-cms-quizzes-0.9.0-beta.3.zip](downloads/connect-cms-quizzes-0.9.0-beta.3.zip)
-- [数式入力支援オプション connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.3.zip](downloads/connect-cms-quizzes-math-editor-tools-option-0.9.0-beta.3.zip)
+- [標準版 connect-cms-yuyuquizzes-0.9.0-beta.4.zip](downloads/connect-cms-yuyuquizzes-0.9.0-beta.4.zip)
+- [数式入力支援オプション connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.4.zip](downloads/connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.4.zip)
 
 標準版だけでも、WYSIWYGへLaTeXコードを直接入力してMathJaxで表示できます。オプション版は、数式入力ダイアログ、プレビュー、挿入ボタンを追加する場合だけ導入します。
 
@@ -49,10 +49,12 @@ Connect-CMS向けの非公式小テストプラグインです。小テストの
 
 1. Connect-CMSのファイルとデータベースをバックアップします。
 2. 標準版ZIPを展開します。
-3. ZIP内の`app`、`resources`、`database`をConnect-CMSのルートへ重ねて配置します。
+3. ZIP内の`app`、`resources`、`database`をConnect-CMSのルートへ配置します。既存のQuizzesから更新する場合は、旧ディレクトリをバックアップ後に削除し、YuyuQuizzesディレクトリへ置き換えます。
 4. Connect-CMSのルートで`php artisan migrate`を実行します。
 5. 必要に応じて`php artisan view:clear`を実行します。
-6. 管理画面から小テストフレームを配置し、一連の動作を確認します。
+6. 管理画面で既存の小テストフレームがYuyuQuizzesとして表示されることを確認します。
+
+既存のQuizzesから更新する場合、Migrationが`plugins`、`frames`の識別子と`quizzes`・`quiz_*`全20テーブルをYuyuQuizzes専用名へ移行します。必ず事前にDBをバックアップしてください。
 
 オプション版はConnect-CMSの共通WYSIWYGを上書きします。導入前に`resources/views/plugins/common/wysiwyg.blade.php`を必ずバックアップしてください。
 

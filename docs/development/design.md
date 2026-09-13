@@ -1,15 +1,15 @@
-# Quizzesプラグイン設計書
+# YuyuQuizzesプラグイン設計書
 
 - 最終更新日：2026-08-15
-- 対象：Connect-CMS Quizzesプラグイン
-- 本文書をQuizzes開発の設計上の正本とする
+- 対象：Connect-CMS YuyuQuizzesプラグイン
+- 本文書をYuyuQuiz開発の設計上の正本とする
 
 ## 1. 開発方針
 
-NetCommons3のQuizzesを参考に、Connect-CMSへ移植する。
+NetCommons3のYuyuQuizを参考に、Connect-CMSへ移植する。
 
 BBSプラグインは参考実装とし、BBSを改修するのではなく、
-Quizzes独自に実装する。
+YuyuQuiz独自に実装する。
 
 ## 2. 現在までの実装
 
@@ -44,7 +44,7 @@ Quizzes独自に実装する。
 
 既存小テストの選択時には、次の2種類を明示的に選ぶ。
 
-- そのまま使用：同じ小テストを複数フレームで共有し、`quiz_frames`のみ更新する
+- そのまま使用：同じ小テストを複数フレームで共有し、`yuyu_quiz_frames`のみ更新する
 - 複製して使用：小テスト一式を別の小テストとして複製し、現在のフレームだけ複製先へ割り当てる
 
 複製後の名称は「元の小テスト名（コピー）」とし、設定変更画面へ遷移する。
@@ -59,13 +59,13 @@ Quizzes独自に実装する。
 
 保存時：
 
-1. `quizzes`へ登録する
-2. `quiz_frames`へ割り当てる
+1. `yuyu_quizzes`へ登録する
+2. `yuyu_quiz_frames`へ割り当てる
 3. 設定変更画面へ遷移する
 
 ### 設定変更
 
-対象となる`quizzes`の設定だけを変更する。
+対象となる`yuyu_quizzes`の設定だけを変更する。
 
 保存内容：
 
@@ -127,10 +127,10 @@ Quizzes独自に実装する。
 - 受験者の回答
 - 採点結果
 - 集計結果
-- ページ・フレーム・グループの利用関係（`quiz_page_groups`）
+- ページ・フレーム・グループの利用関係（`yuyu_quiz_page_groups`）
 
-`quiz_page_groups`は小テストの問題内容ではなく利用関係を保持するため、
-複製先へ引き継がず、現在のフレームの`quiz_frames`だけを複製先へ切り替える。
+`yuyu_quiz_page_groups`は小テストの問題内容ではなく利用関係を保持するため、
+複製先へ引き継がず、現在のフレームの`yuyu_quiz_frames`だけを複製先へ切り替える。
 
 共有中の小テストを編集する画面では、共有フレーム数と次の警告を表示する。
 
@@ -143,10 +143,10 @@ Quizzes独自に実装する。
 - 編集せず戻る
 
 「複製して編集する」では、トランザクション内で小テスト一式を複製し、
-現在のフレームだけ`quiz_frames`の割り当てを複製先へ書き換える。
+現在のフレームだけ`yuyu_quiz_frames`の割り当てを複製先へ書き換える。
 元の小テストと、他フレームの割り当ては変更しない。
 
-`quiz_frames`は1フレームにつき1行に固定する。
+`yuyu_quiz_frames`は1フレームにつき1行に固定する。
 選択・新規作成・複製で割り当てを変更する際は、同じ`frame_id`の古い行と重複行を削除し、
 現在使用する小テストの割り当て1行だけを登録する。
 
@@ -176,7 +176,7 @@ Quizzes独自に実装する。
 
 「表示設定」タブは「出題・表示設定」へ変更する。
 
-設定値はフレーム単位ではなく小テスト単位とし、`quizzes`へ保存する。
+設定値はフレーム単位ではなく小テスト単位とし、`yuyu_quizzes`へ保存する。
 
 ### 出題順
 
@@ -328,13 +328,13 @@ Quizzes独自に実装する。
 
 ### 対象
 
-MathJaxによる数式入力・表示は、QuizzesプラグインでWYSIWYGエディターを使用する欄に限定する。
+MathJaxによる数式入力・表示は、YuyuQuizzesプラグインでWYSIWYGエディターを使用する欄に限定する。
 
 現時点の対象は次のとおりとする。
 
-- 出題ページの共通問題文・資料（`quiz_pages.description`）
-- 各問題の問題文（`quiz_question_revisions.question_text`）
-- 各問題の解説（`quiz_question_revisions.commentary`）
+- 出題ページの共通問題文・資料（`yuyu_quiz_pages.description`）
+- 各問題の問題文（`yuyu_quiz_question_revisions.question_text`）
+- 各問題の解説（`yuyu_quiz_question_revisions.commentary`）
 - 将来WYSIWYG化する模範解答などの入力欄
 
 通常のテキスト入力である選択肢、単語入力の正解候補、採点基準には数式入力機能を追加しない。
@@ -361,7 +361,7 @@ MathJax 4を使用し、次の画面で同じLaTeXソースを数式として表
 - 結果・解説画面
 - 記述式の採点画面
 
-MathJaxはQuizzesの数式対象画面でのみ読み込み、同一ページに複数のQuizzesフレームがある場合も重複して読み込まない。他プラグインのWYSIWYGには数式ボタンを表示しない。
+MathJaxはYuyuQuizの数式対象画面でのみ読み込み、同一ページに複数のYuyuQuizフレームがある場合も重複して読み込まない。他プラグインのWYSIWYGには数式ボタンを表示しない。
 
 
 
@@ -388,10 +388,10 @@ MathJaxはQuizzesの数式対象画面でのみ読み込み、同一ページに
 
 実装時のテーブル責務は次を基準とする。
 
-- `quizzes.use_category_scoring`：カテゴリー別採点の有効・無効
-- `quiz_category_groups`：小テスト単位のグループ、名称、表示順、有効状態
-- `quiz_categories`：グループ配下の項目、名称、表示順、有効状態
-- `quiz_question_revision_categories`：問題リビジョンと項目の割当
+- `yuyu_quizzes.use_category_scoring`：カテゴリー別採点の有効・無効
+- `yuyu_quiz_category_groups`：小テスト単位のグループ、名称、表示順、有効状態
+- `yuyu_quiz_categories`：グループ配下の項目、名称、表示順、有効状態
+- `yuyu_quiz_question_revision_categories`：問題リビジョンと項目の割当
 - 受験時スナップショット：グループ、項目、表示順、問題リビジョンとの割当を受験単位で保存
 
 テーブル名は既存命名規則との整合を実装時に確認するが、上記の責務を別用途のテーブルへ混在させない。小テスト、グループ、項目、問題リビジョンの所属関係をサーバー側で検証し、他小テストのIDを割り当てられないようにする。
