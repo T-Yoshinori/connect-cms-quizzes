@@ -5,10 +5,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('quiz_answers', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_attempt_id')->constrained('quiz_attempts')->cascadeOnDelete();
-            $table->foreignId('quiz_attempt_question_id')->constrained('quiz_attempt_questions')->cascadeOnDelete();
+            $table->foreignId('quiz_attempt_id')->constrained('yuyu_quiz_attempts')->cascadeOnDelete();
+            $table->foreignId('quiz_attempt_question_id')->constrained('yuyu_quiz_attempt_questions')->cascadeOnDelete();
             $table->json('answer_data')->nullable();
             $table->decimal('current_score', 8, 2)->nullable();
             $table->string('correctness', 30)->default('unanswered');
@@ -19,5 +19,5 @@ return new class extends Migration {
             $table->index(['quiz_attempt_id','grading_status']);
         });
     }
-    public function down(): void { Schema::dropIfExists('quiz_answers'); }
+    public function down(): void { Schema::dropIfExists('yuyu_quiz_answers'); }
 };

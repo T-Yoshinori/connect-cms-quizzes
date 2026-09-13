@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('quiz_category_groups', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_category_groups', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('quiz_id');
             $table->string('name');
@@ -18,12 +18,12 @@ return new class extends Migration
 
             $table->foreign('quiz_id')
                 ->references('id')
-                ->on('quizzes')
+                ->on('yuyu_quizzes')
                 ->onDelete('cascade');
             $table->index(['quiz_id', 'is_active', 'sequence'], 'quiz_category_groups_display_index');
         });
 
-        Schema::create('quiz_categories', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_categories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('quiz_category_group_id');
             $table->string('name');
@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table->foreign('quiz_category_group_id')
                 ->references('id')
-                ->on('quiz_category_groups')
+                ->on('yuyu_quiz_category_groups')
                 ->onDelete('cascade');
             $table->index(
                 ['quiz_category_group_id', 'is_active', 'sequence'],
@@ -41,7 +41,7 @@ return new class extends Migration
             );
         });
 
-        Schema::create('quiz_question_revision_categories', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_question_revision_categories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('question_revision_id');
             $table->unsignedBigInteger('quiz_category_id');
@@ -49,11 +49,11 @@ return new class extends Migration
 
             $table->foreign('question_revision_id', 'quiz_question_revision_categories_revision_fk')
                 ->references('id')
-                ->on('quiz_question_revisions')
+                ->on('yuyu_quiz_question_revisions')
                 ->onDelete('cascade');
             $table->foreign('quiz_category_id', 'quiz_question_revision_categories_category_fk')
                 ->references('id')
-                ->on('quiz_categories')
+                ->on('yuyu_quiz_categories')
                 ->onDelete('cascade');
             $table->unique(
                 ['question_revision_id', 'quiz_category_id'],
@@ -64,8 +64,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('quiz_question_revision_categories');
-        Schema::dropIfExists('quiz_categories');
-        Schema::dropIfExists('quiz_category_groups');
+        Schema::dropIfExists('yuyu_quiz_question_revision_categories');
+        Schema::dropIfExists('yuyu_quiz_categories');
+        Schema::dropIfExists('yuyu_quiz_category_groups');
     }
 };

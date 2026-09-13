@@ -5,9 +5,8 @@
 - プラグイン識別子を`quizzes`から`yuyuquizzes`へ変更
 - Plugin、Model、View、URLをYuyuQuizzes名前空間へ変更
 - Model名をLaravelの命名規則に沿った単数形へ統一
-- `quizzes`・`quiz_*`全20テーブルを`yuyu_quizzes`・`yuyu_quiz_*`へ移行
-- Connect-CMSのインストール済みプラグイン・フレーム登録を自動移行
-- 既存データを保持したまま更新するMigrationを追加
+- 新規インストール時に`yuyu_quizzes`・`yuyu_quiz_*`全20テーブルを直接作成
+- 新規インストール専用の配布構成へ変更
 
 ## 0.9.0-beta.3
 

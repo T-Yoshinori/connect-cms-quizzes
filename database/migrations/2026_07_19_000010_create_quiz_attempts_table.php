@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('quiz_attempts', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_attempts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_id')->constrained('quizzes')->restrictOnDelete();
+            $table->foreignId('quiz_id')->constrained('yuyu_quizzes')->restrictOnDelete();
             $table->unsignedInteger('page_id')->nullable();
             $table->unsignedInteger('frame_id')->nullable();
             $table->unsignedBigInteger('user_id');
@@ -40,5 +40,5 @@ return new class extends Migration {
             $table->foreign('user_id')->references('id')->on('users')->restrictOnDelete();
         });
     }
-    public function down(): void { Schema::dropIfExists('quiz_attempts'); }
+    public function down(): void { Schema::dropIfExists('yuyu_quiz_attempts'); }
 };

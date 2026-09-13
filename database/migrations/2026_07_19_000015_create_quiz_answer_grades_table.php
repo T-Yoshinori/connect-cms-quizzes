@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('quiz_answer_grades', function (Blueprint $table) {
+        Schema::create('yuyu_quiz_answer_grades', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quiz_answer_id')->constrained('quiz_answers')->cascadeOnDelete();
+            $table->foreignId('quiz_answer_id')->constrained('yuyu_quiz_answers')->cascadeOnDelete();
             $table->decimal('score', 8, 2)->default(0);
             $table->string('correctness', 30)->default('not_applicable');
             $table->string('grading_type', 30);
@@ -24,5 +24,5 @@ return new class extends Migration {
             $table->foreign('graded_by')->references('id')->on('users')->nullOnDelete();
         });
     }
-    public function down(): void { Schema::dropIfExists('quiz_answer_grades'); }
+    public function down(): void { Schema::dropIfExists('yuyu_quiz_answer_grades'); }
 };

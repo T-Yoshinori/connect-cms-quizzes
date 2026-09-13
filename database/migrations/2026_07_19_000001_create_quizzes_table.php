@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('quizzes', function (Blueprint $table) {
+        Schema::create('yuyu_quizzes', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->longText('description')->nullable();
@@ -37,5 +37,5 @@ return new class extends Migration {
             $table->foreign('updated_id')->references('id')->on('users')->nullOnDelete();
         });
     }
-    public function down(): void { Schema::dropIfExists('quizzes'); }
+    public function down(): void { Schema::dropIfExists('yuyu_quizzes'); }
 };
