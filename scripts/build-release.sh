@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-version="${1:-0.9.0-beta.3}"
+version="${1:-0.9.0-beta.4}"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 build_root="${repo_root}/build"
-standard_name="connect-cms-quizzes-${version}"
-option_name="connect-cms-quizzes-math-editor-tools-option-${version}"
+standard_name="connect-cms-yuyuquizzes-${version}"
+option_name="connect-cms-yuyuquizzes-math-editor-tools-option-${version}"
 
 rm -rf "${build_root}"
 mkdir -p "${build_root}/${standard_name}" "${build_root}/${option_name}"
