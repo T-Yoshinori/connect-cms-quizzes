@@ -33,8 +33,7 @@
 @if (!$is_expired)
     <form id="quiz-answer-form-{{ $attempt->id }}"
           action="{{ url('/') }}/redirect/plugin/yuyuquizzes/saveAnswer/{{ $page->id }}/{{ $frame->id }}/{{ $attempt->id }}#frame-{{ $frame->id }}"
-          method="POST"
-          onsubmit="setTimeout(() => this.querySelectorAll('button[type=submit]').forEach(button => button.disabled = true), 0);">
+          method="POST">
         {{ csrf_field() }}
         <input type="hidden" name="attempt_id" value="{{ $attempt->id }}">
 
@@ -254,18 +253,24 @@ document.addEventListener('DOMContentLoaded', function () {
         writers.push({ save: save, isDirty: function () { return dirty; } });
     });
     var allowingSubmit = false;
+    var submissionPending = false;
     form.addEventListener('submit', function (e) {
         if (allowingSubmit) return;
         if (!writers.length) return;
-        e.preventDefault(); var button = e.submitter;
+        e.preventDefault();
+        if (submissionPending) return;
+        submissionPending = true;
+        var button = e.submitter;
         function flush() { return Promise.all(writers.map(function (writer) { return writer.save(); })).then(function () {
             return writers.some(function (writer) { return writer.isDirty(); }) ? flush() : null;
         }); }
         flush().then(function () {
             allowingSubmit = true;
-            if (button) button.disabled = false;
             form.requestSubmit(button || undefined);
-        }).catch(function () { alert('手書き回答を保存できませんでした。通信状態を確認して再試行してください。'); });
+        }).catch(function () {
+            submissionPending = false;
+            alert('手書き回答を保存できませんでした。通信状態を確認して再試行してください。');
+        });
     });
 });
 </script>
