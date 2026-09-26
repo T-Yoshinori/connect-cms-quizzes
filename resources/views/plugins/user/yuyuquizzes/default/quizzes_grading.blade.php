@@ -64,7 +64,17 @@
             <div class="mb-3">
                 <strong>回答</strong>
                 <div class="border rounded p-3 mt-1">
-                    {!! nl2br(e(data_get($answer->answer_data, 'text', ''))) !!}
+                    @if ($answer->attempt_question->question_revision->essay_input_mode === 'handwriting')
+                        @if (data_get($answer->answer_data, 'handwriting_image_id'))
+                            <a target="_blank" rel="noopener" href="{{ url('/') }}/download/plugin/yuyuquizzes/handwritingImage/{{ $page->id }}/{{ $frame->id }}/{{ data_get($answer->answer_data, 'handwriting_image_id') }}">
+                                <img class="img-fluid border" alt="受験者の手書き回答" src="{{ url('/') }}/download/plugin/yuyuquizzes/handwritingImage/{{ $page->id }}/{{ $frame->id }}/{{ data_get($answer->answer_data, 'handwriting_image_id') }}">
+                            </a>
+                        @else
+                            未回答
+                        @endif
+                    @else
+                        {!! nl2br(e(data_get($answer->answer_data, 'text', ''))) !!}
+                    @endif
                 </div>
             </div>
 

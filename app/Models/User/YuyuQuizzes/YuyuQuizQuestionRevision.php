@@ -18,6 +18,7 @@ class YuyuQuizQuestionRevision extends Model
         'normalization_options' => 'array',
         'answer_rows' => 'integer',
         'character_limit' => 'integer',
+        'essay_input_mode' => 'string',
     ];
 
     public function question()

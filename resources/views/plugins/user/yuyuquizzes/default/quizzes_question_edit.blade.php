@@ -288,6 +288,16 @@
             <div id="essay-options" class="question-option-panel border rounded p-3 mb-4">
                 <h4 class="h6">記述式の設定</h4>
 
+                <div class="form-group row">
+                    <label for="essay_input_mode" class="col-md-4 col-form-label">入力方式</label>
+                    <div class="col-md-4">
+                        <select name="essay_input_mode" id="essay_input_mode" class="form-control">
+                            <option value="text" @if(old('essay_input_mode', optional($revision)->essay_input_mode ?? 'text') === 'text') selected @endif>文字入力</option>
+                            <option value="handwriting" @if(old('essay_input_mode', optional($revision)->essay_input_mode ?? 'text') === 'handwriting') selected @endif>手書き</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-group row mb-2">
                     <label for="answer_rows" class="col-md-4 col-form-label">回答欄の行数</label>
                     <div class="col-md-4">
