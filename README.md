@@ -2,13 +2,13 @@
 
 Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です。小テストの作成、受験、自動採点・手動採点、結果集計、CSV出力、カテゴリー別評価を提供します。
 
-> バージョン: 0.9.0-beta.4  
+> バージョン: 0.9.0-beta.5
 > 開発・提供: ゆうゆう企画  
 > 状態: ベータ版
 
 ## 主な機能
 
-- 単一選択、複数選択、短答、複数短答、記述式
+- 単一選択、複数選択、短答、複数短答、記述式（文字入力・手書き）
 - 回答の途中保存、再開、提出
 - 自動採点と記述式の手動採点
 - 個人結果、受験集団の結果、得点分布
@@ -42,7 +42,7 @@ Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です�
 
 次の配布用ZIPをダウンロードしてください。
 
-- [標準版 connect-cms-yuyuquizzes-0.9.0-beta.4.zip](downloads/connect-cms-yuyuquizzes-0.9.0-beta.4.zip)
+- [標準版 connect-cms-yuyuquizzes-0.9.0-beta.5.zip](downloads/connect-cms-yuyuquizzes-0.9.0-beta.5.zip)
 - [数式入力支援オプション connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.4.zip](downloads/connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.4.zip)
 
 標準版だけでも、WYSIWYGへLaTeXコードを直接入力してMathJaxで表示できます。オプション版は、数式入力ダイアログ、プレビュー、挿入ボタンを追加する場合だけ導入します。
@@ -68,7 +68,7 @@ Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です�
 
 - 評価・検証を目的としたベータ版です。
 - 不具合時に復元できる環境で利用してください。
-- 非会員受験、公開承認ワークフロー、多言語対応、手書き入力解答は含みません。
+- 非会員受験、公開承認ワークフロー、多言語対応は含みません。
 
 ## ライセンス・免責
 
