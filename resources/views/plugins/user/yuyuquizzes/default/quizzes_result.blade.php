@@ -240,7 +240,9 @@
 
                             <div class="alert alert-light border mt-2 mb-0">
                                 <strong>あなたの解答</strong>
-                                @if (empty($user_answer_lines))
+                                @if ($question_type === 'essay' && $attempt_question->question_revision->essay_input_mode === 'handwriting' && !empty($answer_data['handwriting_image_id']))
+                                    <div><img class="img-fluid border" alt="あなたの手書き回答" src="{{ url('/') }}/download/plugin/yuyuquizzes/handwritingImage/{{ $page->id }}/{{ $frame->id }}/{{ $answer_data['handwriting_image_id'] }}"></div>
+                                @elseif (empty($user_answer_lines))
                                     <div class="text-muted">未回答</div>
                                 @else
                                     @foreach ($user_answer_lines as $user_answer_line)

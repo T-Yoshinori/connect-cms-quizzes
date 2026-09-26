@@ -55,6 +55,13 @@ class QuizAnswerService
                 ->select('yuyu_quiz_attempt_questions.*')
                 ->firstOrFail();
 
+            $revision = $attempt_question->question_revision;
+            if ($revision->question_type === 'essay' && $revision->essay_input_mode === 'handwriting') {
+                // The image endpoint owns this answer. A whole-page form must not erase it.
+                return YuyuQuizAnswer::where('quiz_attempt_id', $attempt->id)
+                    ->where('quiz_attempt_question_id', $attempt_question->id)->first();
+            }
+
             $normalized = $this->normalizeAnswerData($answer_data);
             $is_empty = $this->isEmptyAnswer($normalized);
 

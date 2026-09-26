@@ -12,6 +12,7 @@ use App\Models\User\YuyuQuizzes\YuyuQuizChoiceRevision;
 use App\Models\User\YuyuQuizzes\YuyuQuizCorrectAnswerRevision;
 use App\Models\User\YuyuQuizzes\YuyuQuizCategory;
 use App\Models\User\YuyuQuizzes\YuyuQuizAnswer;
+use App\Models\User\YuyuQuizzes\YuyuQuizAttemptQuestion;
 
 /**
  * 問題・Revision・選択肢・正解候補を保存します。
@@ -84,7 +85,10 @@ class QuizQuestionService
                     ->all()
                 : [];
 
-            $has_answers = $this->questionHasAnswers($question->id);
+            // A started attempt already points at this revision, even before an answer exists.
+            $has_answers = $current_revision && YuyuQuizAttemptQuestion::where(
+                'question_revision_id', $current_revision->id
+            )->exists();
 
             if (empty($current_revision) || $has_answers) {
                 $revision = new YuyuQuizQuestionRevision();
@@ -188,6 +192,8 @@ class QuizQuestionService
             'normalization_options' => $data['normalization_options'] ?? null,
             'answer_rows' => $data['answer_rows'] ?? null,
             'character_limit' => $data['character_limit'] ?? null,
+            'essay_input_mode' => $data['question_type'] === 'essay'
+                ? ($data['essay_input_mode'] ?? 'text') : 'text',
         ];
     }
 

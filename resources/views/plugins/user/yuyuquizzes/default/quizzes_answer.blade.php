@@ -113,6 +113,18 @@
                                                    value="{{ ($saved['texts'] ?? [])[$loop->index] ?? '' }}">
                                         </div>
                                     @endforeach
+                                @elseif ($revision->question_type === 'essay' && $revision->essay_input_mode === 'handwriting')
+                                    <div class="quiz-handwriting" data-question-id="{{ $attempt_question->id }}"
+                                         data-image-url="@if(!empty($saved['handwriting_image_id'])){{ url('/') }}/download/plugin/yuyuquizzes/handwritingImage/{{ $page->id }}/{{ $frame->id }}/{{ $saved['handwriting_image_id'] }}@endif">
+                                        <div class="mb-2">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary handwriting-undo">一つ戻す</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary handwriting-clear">全消去</button>
+                                            <span class="handwriting-status small ml-2" role="status">{{ !empty($saved['handwriting_image_id']) ? '保存済み' : '未回答' }}</span>
+                                        </div>
+                                        <canvas width="1200" height="600" class="w-100 border rounded"
+                                                style="height:auto; touch-action:none; background:white; cursor:crosshair"
+                                                aria-label="問{{ $question_number }}の手書き回答欄"></canvas>
+                                    </div>
                                 @elseif ($revision->question_type === 'essay')
                                     <textarea class="form-control"
                                               rows="{{ $revision->answer_rows ?: 5 }}"
@@ -154,6 +166,109 @@
             </button>
         </div>
     </form>
+@endif
+
+@if (!$is_expired)
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('quiz-answer-form-{{ $attempt->id }}');
+    if (!form) return;
+    var writers = [];
+    document.querySelectorAll('#quiz-answer-fields-{{ $attempt->id }} .quiz-handwriting').forEach(function (box) {
+        var canvas = box.querySelector('canvas'), ctx = canvas.getContext('2d');
+        var status = box.querySelector('.handwriting-status'), undo = box.querySelector('.handwriting-undo');
+        var history = [], drawing = false, dirty = false, timer, pending = Promise.resolve();
+        ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111';
+        var savedUrl = box.dataset.imageUrl;
+        if (savedUrl) {
+            var image = new Image();
+            image.onload = function () { if (!dirty) ctx.drawImage(image, 0, 0, canvas.width, canvas.height); };
+            image.src = savedUrl;
+        }
+        function point(e) { var r = canvas.getBoundingClientRect(); return {
+            x: (e.clientX - r.left) * canvas.width / r.width,
+            y: (e.clientY - r.top) * canvas.height / r.height
+        }; }
+        function changed() { dirty = true; status.textContent = '未保存'; clearTimeout(timer);
+            timer = setTimeout(function () { save().catch(function () {}); }, 1800); }
+        canvas.addEventListener('pointerdown', function (e) {
+            if (drawing) return;
+            canvas.setPointerCapture(e.pointerId); drawing = true;
+            history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            if (history.length > 10) history.shift();
+            var p = point(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + .01, p.y + .01); ctx.stroke();
+            changed();
+        });
+        canvas.addEventListener('pointermove', function (e) {
+            if (!drawing) return; var p = point(e); ctx.lineTo(p.x, p.y); ctx.stroke(); changed();
+        });
+        ['pointerup', 'pointercancel'].forEach(function (event) {
+            canvas.addEventListener(event, function () { drawing = false; });
+        });
+        undo.addEventListener('click', function () { if (history.length) { ctx.putImageData(history.pop(), 0, 0); changed(); } });
+        box.querySelector('.handwriting-clear').addEventListener('click', function () {
+            if (!confirm('手書き回答を全消去しますか？')) return;
+            history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            if (history.length > 10) history.shift();
+            ctx.clearRect(0, 0, canvas.width, canvas.height); changed();
+        });
+        function save() {
+            clearTimeout(timer);
+            if (!dirty) return pending;
+            dirty = false;
+            // Serialized uploads prevent an older image from replacing a newer one.
+            var snapshot = document.createElement('canvas');
+            snapshot.width = canvas.width; snapshot.height = canvas.height;
+            var snapshotCtx = snapshot.getContext('2d');
+            snapshotCtx.fillStyle = '#fff'; snapshotCtx.fillRect(0, 0, snapshot.width, snapshot.height);
+            snapshotCtx.drawImage(canvas, 0, 0);
+            var pixels = snapshotCtx.getImageData(0, 0, snapshot.width, snapshot.height).data;
+            var blank = true;
+            for (var i = 0; i < pixels.length; i += 4) {
+                if (pixels[i] < 245 || pixels[i + 1] < 245 || pixels[i + 2] < 245) { blank = false; break; }
+            }
+            pending = pending.catch(function () {}).then(function () {
+                status.textContent = '保存中';
+                return blank ? null : new Promise(function (resolve) { snapshot.toBlob(resolve, 'image/png'); });
+            }).then(function (blob) {
+                if (!blank && !blob) throw new Error('画像を作成できませんでした');
+                var data = new FormData();
+                data.append('_token', form.querySelector('input[name="_token"]').value);
+                data.append('return_mode', 'asis');
+                data.append('attempt_question_id', box.dataset.questionId);
+                if (blank) data.append('clear', '1');
+                else data.append('image', blob, 'answer.png');
+                return fetch('{{ url('/') }}/redirect/plugin/yuyuquizzes/saveHandwriting/{{ $page->id }}/{{ $frame->id }}/{{ $attempt->id }}', {
+                    method: 'POST', body: data, credentials: 'same-origin', headers: { 'Accept': 'application/json' }
+                });
+            }).then(function (response) {
+                if (!response.ok || !response.headers.get('content-type')?.includes('application/json'))
+                    throw new Error('保存に失敗しました');
+                return response.json();
+            }).then(function (result) {
+                if (result.saved !== true) throw new Error('保存に失敗しました');
+                status.textContent = dirty ? '未保存' : '保存済み';
+            }).catch(function (error) { dirty = true; status.textContent = '保存できませんでした。再試行してください'; throw error; });
+            return pending;
+        }
+        writers.push({ save: save, isDirty: function () { return dirty; } });
+    });
+    var allowingSubmit = false;
+    form.addEventListener('submit', function (e) {
+        if (allowingSubmit) return;
+        if (!writers.length) return;
+        e.preventDefault(); var button = e.submitter;
+        function flush() { return Promise.all(writers.map(function (writer) { return writer.save(); })).then(function () {
+            return writers.some(function (writer) { return writer.isDirty(); }) ? flush() : null;
+        }); }
+        flush().then(function () {
+            allowingSubmit = true;
+            if (button) button.disabled = false;
+            form.requestSubmit(button || undefined);
+        }).catch(function () { alert('手書き回答を保存できませんでした。通信状態を確認して再試行してください。'); });
+    });
+});
+</script>
 @endif
 
 @if ($attempt->expires_at && !$is_expired)

@@ -4,6 +4,8 @@ namespace App\Plugins\User\Yuyuquizzes;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User\YuyuQuizzes\YuyuQuizHandwritingImage;
 
 use App\Models\User\YuyuQuizzes\YuyuQuiz;
 use App\Models\User\YuyuQuizzes\YuyuQuizFrame;
@@ -24,6 +26,7 @@ use App\Plugins\User\Yuyuquizzes\Services\QuizAdminResultService;
 use App\Plugins\User\Yuyuquizzes\Services\QuizAnalysisCsvService;
 use App\Plugins\User\Yuyuquizzes\Services\QuizCategoryService;
 use App\Plugins\User\Yuyuquizzes\Services\QuizCategoryResultService;
+use App\Plugins\User\Yuyuquizzes\Services\QuizHandwritingService;
 
 /**
  * 小テストプラグイン
@@ -77,6 +80,7 @@ class YuyuquizzesPlugin extends UserPluginBase
                 'exportSpTableCsv',
                 'exportCategoryResultsCsv',
                 'grading',
+                'handwritingImage',
             ],
             'post' => [
                 // 設定保存
@@ -96,6 +100,7 @@ class YuyuquizzesPlugin extends UserPluginBase
                 'saveAnswer',
                 'submitAttempt',
                 'gradeAnswer',
+                'saveHandwriting',
             ],
         ];
     }
@@ -139,6 +144,7 @@ class YuyuquizzesPlugin extends UserPluginBase
             'exportSpTableCsv' => ['role_article'],
             'exportCategoryResultsCsv' => ['role_article'],
             'gradeAnswer' => ['role_article_admin'],
+            'handwritingImage' => ['role_guest'],
 
             // 受験
             'start' => ['role_guest'],
@@ -147,6 +153,7 @@ class YuyuquizzesPlugin extends UserPluginBase
             'result' => ['role_guest'],
             'startAttempt' => ['role_guest'],
             'saveAnswer' => ['role_guest'],
+            'saveHandwriting' => ['role_guest'],
             'submitAttempt' => ['role_guest'],
         ];
     }
@@ -457,6 +464,7 @@ class YuyuquizzesPlugin extends UserPluginBase
             'normalization_options' => ['nullable', 'array'],
             'answer_rows' => ['nullable', 'integer', 'min:1'],
             'character_limit' => ['nullable', 'integer', 'min:1'],
+            'essay_input_mode' => ['required_if:question_type,essay', 'in:text,handwriting'],
             'sequence' => ['nullable', 'integer', 'min:0'],
             'choices' => ['nullable', 'array'],
             'choices.*.text' => ['nullable', 'string'],
@@ -480,6 +488,7 @@ class YuyuquizzesPlugin extends UserPluginBase
             'grading_guide' => '採点基準',
             'answer_rows' => '回答欄の行数',
             'character_limit' => '文字数上限',
+            'essay_input_mode' => '記述式の入力方式',
             'sequence' => '表示順',
             'category_ids' => 'カテゴリー',
         ]);
@@ -693,6 +702,37 @@ class YuyuquizzesPlugin extends UserPluginBase
 
         $request->merge([
             'redirect_path' => $redirect_path,
+        ]);
+    }
+
+    /** Save one canvas independently of the all-question form. */
+    public function saveHandwriting($request, $page_id, $frame_id, $attempt_id)
+    {
+        $request->validate([
+            'attempt_question_id' => ['required', 'integer'],
+            'image' => ['required_unless:clear,1', 'file', 'max:1024'],
+            'clear' => ['nullable', 'boolean'],
+        ]);
+        $attempt = app(QuizAttemptService::class)->getAnsweringAttempt($attempt_id, Auth::id());
+        $this->ensureFrameQuiz($frame_id, $attempt->quiz_id);
+        $image = app(QuizHandwritingService::class)->save(
+            $attempt_id, (int)$request->input('attempt_question_id'), Auth::id(),
+            $request->file('image'), $request->boolean('clear')
+        );
+        return response()->json(['saved' => true, 'image_id' => $image ? $image->id : null]);
+    }
+
+    /** Image bytes are private; this action checks the owner or grading role. */
+    public function handwritingImage($request, $page_id, $frame_id, $image_id)
+    {
+        $image = YuyuQuizHandwritingImage::with('answer.attempt')->findOrFail($image_id);
+        $this->ensureFrameQuiz($frame_id, $image->answer->attempt->quiz_id);
+        $can_grade = $this->checkRoleFromFrame(Auth::user(), 'role_article_admin', $this->frame);
+        $image = app(QuizHandwritingService::class)->findForViewer($image_id, Auth::id(), $can_grade);
+        abort_unless(Storage::disk('local')->exists($image->path), 404);
+        return response(Storage::disk('local')->get($image->path), 200, [
+            'Content-Type' => 'image/png', 'Cache-Control' => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 
