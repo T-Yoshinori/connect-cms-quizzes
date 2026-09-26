@@ -36,6 +36,7 @@
           method="POST">
         {{ csrf_field() }}
         <input type="hidden" name="attempt_id" value="{{ $attempt->id }}">
+        <input type="hidden" name="after_save" value="stay">
 
         <div id="quiz-answer-fields-{{ $attempt->id }}">
             @php $question_number = 0; @endphp
@@ -143,23 +144,19 @@
         <div id="quiz-answer-actions-{{ $attempt->id }}" class="d-flex flex-wrap justify-content-center">
             <button class="btn btn-outline-primary mr-2 mb-2"
                     type="submit"
-                    name="after_save"
-                    value="stay">
+                    onclick="this.form.elements['after_save'].value='stay'">
                 <i class="fas fa-save"></i>
                 この画面の回答を保存
             </button>
             <button class="btn btn-primary mb-2"
                     type="submit"
-                    name="after_save"
-                    value="review">
+                    onclick="this.form.elements['after_save'].value='review'">
                 提出内容を確認する
                 <i class="fas fa-arrow-right"></i>
             </button>
             <button class="btn btn-outline-secondary ml-2 mb-2"
                     type="submit"
-                    name="after_save"
-                    value="interrupt"
-                    onclick="return confirm('受験を中断しても制限時間は止まりません。予定の制限時間を過ぎると回答できなくなります。現在の回答を保存して受験を中断しますか？');">
+                    onclick="if (!confirm('受験を中断しても制限時間は止まりません。予定の制限時間を過ぎると回答できなくなります。現在の回答を保存して受験を中断しますか？')) return false; this.form.elements['after_save'].value='interrupt';">
                 <i class="fas fa-pause"></i>
                 受験を中断する
             </button>
@@ -252,21 +249,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         writers.push({ save: save, isDirty: function () { return dirty; } });
     });
-    var allowingSubmit = false;
     var submissionPending = false;
     form.addEventListener('submit', function (e) {
-        if (allowingSubmit) return;
         if (!writers.length) return;
         e.preventDefault();
         if (submissionPending) return;
         submissionPending = true;
-        var button = e.submitter;
         function flush() { return Promise.all(writers.map(function (writer) { return writer.save(); })).then(function () {
             return writers.some(function (writer) { return writer.isDirty(); }) ? flush() : null;
         }); }
         flush().then(function () {
-            allowingSubmit = true;
-            form.requestSubmit(button || undefined);
+            // submit() preserves the hidden action and does not re-enter this listener.
+            HTMLFormElement.prototype.submit.call(form);
         }).catch(function () {
             submissionPending = false;
             alert('手書き回答を保存できませんでした。通信状態を確認して再試行してください。');
