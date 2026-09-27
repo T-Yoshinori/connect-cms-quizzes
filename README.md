@@ -43,7 +43,7 @@ Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です�
 次の配布用ZIPをダウンロードしてください。
 
 - [標準版 connect-cms-yuyuquizzes-0.9.0-beta.5.zip](downloads/connect-cms-yuyuquizzes-0.9.0-beta.5.zip)
-- [数式入力支援オプション connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.4.zip](downloads/connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.4.zip)
+- [数式入力支援オプション connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.5.zip](downloads/connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.5.zip)
 
 標準版だけでも、WYSIWYGへLaTeXコードを直接入力してMathJaxで表示できます。オプション版は、数式入力ダイアログ、プレビュー、挿入ボタンを追加する場合だけ導入します。
 
