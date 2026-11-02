@@ -68,3 +68,10 @@ Seederは小テストの登録だけを行い、テストユーザー・問題�
 MIT License。CMS本体のライセンスは配布元の条件に従います。
 Connect-CMS開発元による公式提供・認定・保証を受けたものではありません。
 設計・実装にはChatGPT（OpenAI）の開発支援を利用しています。
+
+## デモデータの初期化（任意）
+
+管理者向けの `quizzes:reset-demo` コマンドを追加しました。通常利用では実行不要です。
+[使い方・復元条件](docs/demo-reset.md) ／ [Ver.1・Ver.2共通の任意機能ZIP](downloads/connect-cms-yuyuquizzes-demo-reset-1.0.0.zip)
+
+現在の標準版ZIPとは別配布です。利用する場合だけ任意機能ZIP内のappを追加配置してください。
