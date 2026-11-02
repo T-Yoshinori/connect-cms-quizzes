@@ -79,3 +79,10 @@ MIT Licenseで提供します。
 ## 開発支援
 
 設計、実装およびコードレビューにはChatGPT（OpenAI）による開発支援を利用しています。仕様決定、動作確認、公開および保守の責任は、開発・提供者が負います。
+
+## デモデータの初期化（任意）
+
+管理者向けの `quizzes:reset-demo` コマンドを追加しました。通常利用では実行不要です。
+[使い方・復元条件](docs/demo-reset.md) ／ [Ver.1・Ver.2共通の任意機能ZIP](downloads/connect-cms-yuyuquizzes-demo-reset-1.0.0.zip)
+
+現在の標準版ZIPとは別配布です。利用する場合だけ任意機能ZIP内のappを追加配置してください。
