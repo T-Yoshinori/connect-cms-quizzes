@@ -137,6 +137,7 @@ class ResetQuizzesDemo extends Command
             $safety_path = $this->safetyBackupPath($quiz_id);
             $this->writeSnapshot($safety_path, $current);
 
+            $this->restoreImages($baseline);
             DB::table('yuyu_quiz_attempts')->where('quiz_id', $quiz_id)->delete();
 
             foreach (self::TABLE_ORDER as $table) {
