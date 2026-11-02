@@ -1,4 +1,5 @@
 <?php
+function report($e) { fwrite(STDERR, $e->getMessage() . "\n"); }
 require __DIR__ . '/vendor/autoload.php';
 use Illuminate\Foundation\Application;
 use Illuminate\Config\Repository;

@@ -35,6 +35,6 @@ jobs:
         working-directory: tests/DemoReset
         run: |
           php -l ResetQuizzesDemo.php
-          php run.php > result.log 2>&1
+          php run.php > result.log 2>&1 || { cat result.log; exit 1; }
           cat result.log
           grep -q 'ALL RESET CHECKS PASSED' result.log
