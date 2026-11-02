@@ -1,81 +1,70 @@
-# Connect-CMS YuyuQuizzes
+# YuyuQuizzes — Connect-CMS Ver.2対応β版
 
-Connect-CMS向けの非公式小テストプラグイン「YuyuQuizzes」です。小テストの作成、受験、自動採点・手動採点、結果集計、CSV出力、カテゴリー別評価を提供します。
+- 配布版: 0.9.0-cms2.beta.1
+- 対象: Connect-CMS 2.44.1 / PHP 8.3（移行確認環境: 8.3.36）
+- ブランチ: `connect-cms-v2`
+- [CMS Ver.1版](https://github.com/T-Yoshinori/connect-cms-quizzes/tree/main)
+- [Ver.2用インストールZIP](downloads/connect-cms-yuyuquizzes-0.9.0-cms2.beta.1.zip)
 
-> バージョン: 0.9.0-beta.5
-> 開発・提供: ゆうゆう企画  
-> 状態: ベータ版
+小テストの作成・受験、自動採点・手動採点、結果集計、CSV出力、カテゴリー別評価、
+手書き回答を提供する非公式プラグインです。開発・提供: ゆうゆう企画。
 
-## 主な機能
+## 導入対象
+正常稼働するConnect-CMS 2.44.1への新規導入用β版です。
+Ver.1のデータ移行・旧Quizzesからの変換ツールは含みません。
+今回の統合移行版を導入して検証済みのサイトには、再配置・再インストールは不要です。
 
-- 単一選択、複数選択、短答、複数短答、記述式（文字入力・手書き）
-- 回答の途中保存、再開、提出
-- 自動採点と記述式の手動採点
-- 個人結果、受験集団の結果、得点分布
-- 小問別反応表、SP表、カテゴリー別結果のCSV出力
-- カテゴリー別評価とレーダーチャート
-- MathJaxによる数式表示
-- 小テスト一式の共有・複製
-- モデレータによる管理者向け結果閲覧・CSV出力
+## 導入手順
+1. CMSのファイルとデータベースをバックアップ。
+2. ZIP内の `app`、`database`、`resources` をCMS設置先に同じ構成で配置。
+   READMEやLICENSE等はCMSルートへコピー不要です。
+3. CMS設置先で `composer dump-autoload` を実行。
+4. [このプラグイン専用のマイグレーションコマンド](docs/migrate-cms2.md)を実行。
+   23ファイルを指定し、他プラグインの未実行マイグレーションは含めません。
+5. 次を実行:
 
-## 対応確認環境
+```sh
+php artisan db:seed --class=YuyuQuizzesPluginSeeder
+php artisan view:clear
+```
 
-- Connect-CMS 1.39.0
-- PHP 8.1
+6. プラグイン管理で「小テスト」の表示状態を確認し、ページへ配置。
+7. フレーム設定の「新規作成」から小テストを作成し、公開設定・問題登録へ進みます。
 
-本配布物は新規インストール用です。既存のQuizzes環境の更新には使用しないでください。
+Seederは小テストの登録だけを行い、テストユーザー・問題・回答は作成しません。
+既存登録がある場合は追加せず、既存の表示設定を保持します。
+既存テーブルがあるのにマイグレーション履歴がない場合は、再実行せず環境を確認してください。
 
-必ず検証環境で確認してから利用してください。本番環境へ導入する前に、ファイルとデータベースのバックアップを取得してください。
+## 依存関係・配布範囲
+- CMS標準: ユーザー・グループ・フレーム・バケット・権限・WYSIWYG・共通Blade部品。
+- 他の独自プラグインは必須ではありません。YuyuLearning/YuyuPortalは同梱しません。
+- 追加のComposerパッケージ、独自テーマの指定、CMS標準ファイルの上書きは不要。
+- 公開開始・終了日時はCMS共通datetimepickerを使用。
+- 手書き画像はLaravelのlocalディスクへ保存。公開ディスクへの切替やstorage:linkは不要。
+  保存先とstorageの書込権限を確認してください。画像は認可付きアクションから配信します。
+- MathJaxは既存コードどおり外部CDNから読み込みます。オフライン環境では別途対応が必要。
+- Ver.1用の数式入力支援オプション（共通wysiwyg上書き）は同梱せず、Ver.2対応確認済みとは扱いません。
+  通常版にもMathJax表示機能があります。
 
-## ソースコード
+## Ver.2版で反映した修正
+- 設定画面の入口指定と、共通フレーム編集からの設定タブ読み込み。
+- 公開開始・終了日時の入力をCMS標準に統一。
+- 日付入力変更時に発生したBladeブロックの不整合を修正。
+- 手書き画像モデルと関連マイグレーションを同梱。
+- 単独導入用Seederを追加。統合環境の一括Seederは同梱しません。
 
-標準版の実ファイルは、GitHub上で直接閲覧できます。
+## 確認状況
+利用者からVer.2環境で一通りのテスト完了の報告を受けています。
+操作別の全件記録や全ブラウザー・全権限条件の検証を保証するものではありません。
+今回の整理ではソースのGit blob一致、参照クラス・Blade部品の存在、配布ZIPと元ファイルの一致を確認。
+この単独ZIPによる新規サイトへのインストール、追加Seederの実行は今回未検証です。
 
-- [プラグイン本体](app/Plugins/User/Yuyuquizzes)
-- [Model](app/Models/User/YuyuQuizzes)
-- [Migration](database/migrations)
-- [画面テンプレート](resources/views/plugins/user/yuyuquizzes)
+## 問い合わせ
+不具合はこのリポジトリのIssuesへ。CMS/PHP/配布版、再現手順、期待結果・実際の結果を記載してください。
+個人情報・認証情報・回答内容は公開しないでください。[セキュリティ方針](SECURITY.md)も参照してください。
 
-ルート直下の`app`、`database`、`resources`は、Connect-CMSへ重ねて配置するディレクトリ構成と同じです。配布用の標準ZIPも、このソースコードから生成します。
-
-## ダウンロード
-
-次の配布用ZIPをダウンロードしてください。
-
-- [標準版 connect-cms-yuyuquizzes-0.9.0-beta.5.zip](downloads/connect-cms-yuyuquizzes-0.9.0-beta.5.zip)
-- [数式入力支援オプション connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.5.zip](downloads/connect-cms-yuyuquizzes-math-editor-tools-option-0.9.0-beta.5.zip)
-
-標準版だけでも、WYSIWYGへLaTeXコードを直接入力してMathJaxで表示できます。オプション版は、数式入力ダイアログ、プレビュー、挿入ボタンを追加する場合だけ導入します。
-
-## インストール
-
-1. Connect-CMSのファイルとデータベースをバックアップします。
-2. 標準版ZIPを展開します。
-3. ZIP内の`app`、`resources`、`database`をConnect-CMSのルートへ配置します。
-4. Connect-CMSのルートで`php artisan migrate`を実行します。
-5. 必要に応じて`php artisan view:clear`を実行します。
-6. 管理画面で既存の小テストフレームがYuyuQuizzesとして表示されることを確認します。
-
-
-オプション版はConnect-CMSの共通WYSIWYGを上書きします。導入前に`resources/views/plugins/common/wysiwyg.blade.php`を必ずバックアップしてください。
-
-## 権限
-
-- モデレータ: 管理者向け結果の閲覧、CSV出力
-- コンテンツ管理者: 設定、問題作成・編集、手動採点、およびモデレータの機能
-
-## ベータ版の注意
-
-- 評価・検証を目的としたベータ版です。
-- 不具合時に復元できる環境で利用してください。
-- 非会員受験、公開承認ワークフロー、多言語対応は含みません。
-
-## ライセンス・免責
-
-MIT Licenseで提供します。
-
-本プラグインは、株式会社オープンソース・ワークショップが公式に提供、認定または保証するものではありません。Connect-CMS本体の著作権とライセンスは、配布元の条件に従います。
-
-## 開発支援
-
-設計、実装およびコードレビューにはChatGPT（OpenAI）による開発支援を利用しています。仕様決定、動作確認、公開および保守の責任は、開発・提供者が負います。
+## 開発・ライセンス
+`python3 scripts/build_package.py` で配布ZIPを再生成できます。
+MIT License。CMS本体のライセンスは配布元の条件に従います。
+Connect-CMS開発元による公式提供・認定・保証を受けたものではありません。
+設計・実装にはChatGPT（OpenAI）の開発支援を利用しています。

@@ -41,6 +41,12 @@ use App\Plugins\User\Yuyuquizzes\Services\QuizHandwritingService;
  */
 class YuyuquizzesPlugin extends UserPluginBase
 {
+    /** 設定を開いた際に、小テスト独自の設定タブを表示する。 */
+    public function getFirstFrameEditAction()
+    {
+        return 'editQuizSettings';
+    }
+
     /**
      * getPost()で取得したデータのキャッシュ
      *

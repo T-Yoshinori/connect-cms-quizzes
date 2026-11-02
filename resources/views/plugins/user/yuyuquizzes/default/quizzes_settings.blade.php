@@ -180,15 +180,21 @@
                     </label>
 
                     <div class="{{ $frame->getSettingInputClass() }}">
-                        <input type="datetime-local"
-                               name="publish_start_at"
-                               value="{{ old(
-                                   'publish_start_at',
-                                   !empty($quiz->publish_start_at)
-                                       ? \Carbon\Carbon::parse($quiz->publish_start_at)->format('Y-m-d\TH:i')
-                                       : ''
-                               ) }}"
-                               class="form-control @if ($errors->has('publish_start_at')) border-danger @endif">
+                        @php
+                            $picker_id = 'publish_start_at_picker_' . $frame->id;
+                        @endphp
+                        <div class="input-group date" id="{{ $picker_id }}" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                            <input type="text" name="publish_start_at" id="{{ $picker_id }}_input"
+                                   value="{{ str_replace('T', ' ', old('publish_start_at', !empty($quiz->publish_start_at) ? \Carbon\Carbon::parse($quiz->publish_start_at)->format('Y-m-d H:i') : '')) }}"
+                                   data-td-target="#{{ $picker_id }}" autocomplete="off"
+                                   class="form-control datetimepicker-input @if ($errors->has('publish_start_at')) border-danger @endif">
+                            <div class="input-group-append" data-td-target="#{{ $picker_id }}" data-td-toggle="datetimepicker">
+                                <button type="button" class="btn btn-outline-secondary" aria-label="公開開始日時を選択">
+                                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @include('plugins.common.datetimepicker', ['element_id' => $picker_id, 'format' => 'yyyy-MM-dd HH:mm', 'clock_icon' => true])
 
                         @include('plugins.common.errors_inline', [
                             'name' => 'publish_start_at'
@@ -203,15 +209,21 @@
                     </label>
 
                     <div class="{{ $frame->getSettingInputClass() }}">
-                        <input type="datetime-local"
-                               name="publish_end_at"
-                               value="{{ old(
-                                   'publish_end_at',
-                                   !empty($quiz->publish_end_at)
-                                       ? \Carbon\Carbon::parse($quiz->publish_end_at)->format('Y-m-d\TH:i')
-                                       : ''
-                               ) }}"
-                               class="form-control @if ($errors->has('publish_end_at')) border-danger @endif">
+                        @php
+                            $picker_id = 'publish_end_at_picker_' . $frame->id;
+                        @endphp
+                        <div class="input-group date" id="{{ $picker_id }}" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                            <input type="text" name="publish_end_at" id="{{ $picker_id }}_input"
+                                   value="{{ str_replace('T', ' ', old('publish_end_at', !empty($quiz->publish_end_at) ? \Carbon\Carbon::parse($quiz->publish_end_at)->format('Y-m-d H:i') : '')) }}"
+                                   data-td-target="#{{ $picker_id }}" autocomplete="off"
+                                   class="form-control datetimepicker-input @if ($errors->has('publish_end_at')) border-danger @endif">
+                            <div class="input-group-append" data-td-target="#{{ $picker_id }}" data-td-toggle="datetimepicker">
+                                <button type="button" class="btn btn-outline-secondary" aria-label="公開終了日時を選択">
+                                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @include('plugins.common.datetimepicker', ['element_id' => $picker_id, 'format' => 'yyyy-MM-dd HH:mm', 'clock_icon' => true])
 
                         @include('plugins.common.errors_inline', [
                             'name' => 'publish_end_at'
