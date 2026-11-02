@@ -43,7 +43,7 @@ class ResetQuizzesDemo extends Command
 
     public function handle()
     {
-        $quiz_id = filter_var($this->argument('yuyu_quiz_id'), FILTER_VALIDATE_INT, [
+        $quiz_id = filter_var($this->argument('quiz_id'), FILTER_VALIDATE_INT, [
             'options' => ['min_range' => 1],
         ]);
 
@@ -137,7 +137,7 @@ class ResetQuizzesDemo extends Command
             $safety_path = $this->safetyBackupPath($quiz_id);
             $this->writeSnapshot($safety_path, $current);
 
-            DB::table('yuyu_quiz_attempts')->where('yuyu_quiz_id', $quiz_id)->delete();
+            DB::table('yuyu_quiz_attempts')->where('quiz_id', $quiz_id)->delete();
 
             foreach (self::TABLE_ORDER as $table) {
                 if (!Schema::hasTable($table)) {
@@ -163,29 +163,29 @@ class ResetQuizzesDemo extends Command
 
     private function makeSnapshot(int $quiz_id): array
     {
-        $attempt_ids = $this->ids('yuyu_quiz_attempts', 'id', 'yuyu_quiz_id', [$quiz_id]);
-        $page_ids = $this->ids('yuyu_quiz_attempt_pages', 'id', 'yuyu_quiz_attempt_id', $attempt_ids);
-        $question_ids = $this->ids('yuyu_quiz_attempt_questions', 'id', 'yuyu_quiz_attempt_page_id', $page_ids);
-        $answer_ids = $this->ids('yuyu_quiz_answers', 'id', 'yuyu_quiz_attempt_id', $attempt_ids);
-        $group_ids = $this->ids('yuyu_quiz_attempt_category_groups', 'id', 'yuyu_quiz_attempt_id', $attempt_ids);
-        $category_ids = $this->ids('yuyu_quiz_attempt_categories', 'id', 'yuyu_quiz_attempt_category_group_id', $group_ids);
+        $attempt_ids = $this->ids('yuyu_quiz_attempts', 'id', 'quiz_id', [$quiz_id]);
+        $page_ids = $this->ids('yuyu_quiz_attempt_pages', 'id', 'quiz_attempt_id', $attempt_ids);
+        $question_ids = $this->ids('yuyu_quiz_attempt_questions', 'id', 'quiz_attempt_page_id', $page_ids);
+        $answer_ids = $this->ids('yuyu_quiz_answers', 'id', 'quiz_attempt_id', $attempt_ids);
+        $group_ids = $this->ids('yuyu_quiz_attempt_category_groups', 'id', 'quiz_attempt_id', $attempt_ids);
+        $category_ids = $this->ids('yuyu_quiz_attempt_categories', 'id', 'quiz_attempt_category_group_id', $group_ids);
 
         $tables = [
-            'yuyu_quiz_attempts' => $this->rows('yuyu_quiz_attempts', 'yuyu_quiz_id', [$quiz_id]),
-            'yuyu_quiz_attempt_pages' => $this->rows('yuyu_quiz_attempt_pages', 'yuyu_quiz_attempt_id', $attempt_ids),
-            'yuyu_quiz_attempt_questions' => $this->rows('yuyu_quiz_attempt_questions', 'yuyu_quiz_attempt_page_id', $page_ids),
-            'yuyu_quiz_attempt_question_choices' => $this->rows('yuyu_quiz_attempt_question_choices', 'yuyu_quiz_attempt_question_id', $question_ids),
-            'yuyu_quiz_attempt_category_groups' => $this->rows('yuyu_quiz_attempt_category_groups', 'yuyu_quiz_attempt_id', $attempt_ids),
-            'yuyu_quiz_attempt_categories' => $this->rows('yuyu_quiz_attempt_categories', 'yuyu_quiz_attempt_category_group_id', $group_ids),
-            'yuyu_quiz_attempt_question_categories' => $this->rows('yuyu_quiz_attempt_question_categories', 'yuyu_quiz_attempt_category_id', $category_ids),
-            'yuyu_quiz_answers' => $this->rows('yuyu_quiz_answers', 'yuyu_quiz_attempt_id', $attempt_ids),
-            'yuyu_quiz_answer_grades' => $this->rows('yuyu_quiz_answer_grades', 'yuyu_quiz_answer_id', $answer_ids),
+            'yuyu_quiz_attempts' => $this->rows('yuyu_quiz_attempts', 'quiz_id', [$quiz_id]),
+            'yuyu_quiz_attempt_pages' => $this->rows('yuyu_quiz_attempt_pages', 'quiz_attempt_id', $attempt_ids),
+            'yuyu_quiz_attempt_questions' => $this->rows('yuyu_quiz_attempt_questions', 'quiz_attempt_page_id', $page_ids),
+            'yuyu_quiz_attempt_question_choices' => $this->rows('yuyu_quiz_attempt_question_choices', 'quiz_attempt_question_id', $question_ids),
+            'yuyu_quiz_attempt_category_groups' => $this->rows('yuyu_quiz_attempt_category_groups', 'quiz_attempt_id', $attempt_ids),
+            'yuyu_quiz_attempt_categories' => $this->rows('yuyu_quiz_attempt_categories', 'quiz_attempt_category_group_id', $group_ids),
+            'yuyu_quiz_attempt_question_categories' => $this->rows('yuyu_quiz_attempt_question_categories', 'quiz_attempt_category_id', $category_ids),
+            'yuyu_quiz_answers' => $this->rows('yuyu_quiz_answers', 'quiz_attempt_id', $attempt_ids),
+            'yuyu_quiz_answer_grades' => $this->rows('yuyu_quiz_answer_grades', 'quiz_answer_id', $answer_ids),
         ];
 
         $snapshot = [
             'format_version' => 2,
             'site' => hash('sha256', (string) config('app.key') . '|' . base_path()),
-            'yuyu_quiz_id' => $quiz_id,
+            'quiz_id' => $quiz_id,
             'created_at' => now()->toIso8601String(),
             'tables' => $tables,
         ];
@@ -291,7 +291,7 @@ class ResetQuizzesDemo extends Command
         if (($snapshot['format_version'] ?? null) !== 2) {
             throw new RuntimeException('未対応の初期状態ファイルです。');
         }
-        if ((int) ($snapshot['yuyu_quiz_id'] ?? 0) !== $quiz_id) {
+        if ((int) ($snapshot['quiz_id'] ?? 0) !== $quiz_id) {
             throw new RuntimeException('初期状態ファイルの小テストIDが一致しません。');
         }
 

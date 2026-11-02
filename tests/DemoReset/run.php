@@ -77,6 +77,7 @@ file_put_contents($root.'/storage/framework/down', '{}');
 if ($app->bound('Illuminate\\Contracts\\Foundation\\MaintenanceMode')) {
  // Laravel resolves the file-backed maintenance driver from app configuration.
 }
+DB::table('yuyu_quiz_handwriting_images')->where('id',1)->delete();
 Storage::disk('local')->delete('yuyu-quizzes/handwriting/1/'.str_repeat('1',40).'.png');
 DB::table('yuyu_quiz_answer_grades')->where('id',1)->delete();
 check(runCommand(['quiz_id'=>1,'--force'=>true])===0,'restore baseline including missing image');
