@@ -48,7 +48,7 @@ class ResetQuizzesDemo extends Command
         ]);
 
         if ($quiz_id === false) {
-            $this->error('yuyu_quiz_id には1以上の整数を指定してください。');
+            $this->error('quiz_id には1以上の整数を指定してください。');
             return self::FAILURE;
         }
 
@@ -180,6 +180,7 @@ class ResetQuizzesDemo extends Command
             'yuyu_quiz_attempt_question_categories' => $this->rows('yuyu_quiz_attempt_question_categories', 'quiz_attempt_category_id', $category_ids),
             'yuyu_quiz_answers' => $this->rows('yuyu_quiz_answers', 'quiz_attempt_id', $attempt_ids),
             'yuyu_quiz_answer_grades' => $this->rows('yuyu_quiz_answer_grades', 'quiz_answer_id', $answer_ids),
+            'yuyu_quiz_handwriting_images' => $this->rows('yuyu_quiz_handwriting_images', 'quiz_answer_id', $answer_ids),
         ];
 
         $snapshot = [
