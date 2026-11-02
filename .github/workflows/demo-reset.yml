@@ -1,0 +1,40 @@
+name: Quiz demo reset compatibility
+on:
+  push:
+    branches: [main, connect-cms-v2]
+    paths:
+      - 'app/Console/Commands/ResetQuizzesDemo.php'
+      - 'tests/DemoReset/**'
+      - '.github/workflows/demo-reset.yml'
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - php: '8.1'
+            laravel: '^8.83'
+          - php: '8.3'
+            laravel: '^10.48'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pdo_sqlite
+          tools: composer:v2
+      - name: Install isolated test dependencies
+        working-directory: tests/DemoReset
+        env:
+          LARAVEL_CONSTRAINT: ${{ matrix.laravel }}
+        run: |
+          php -r '$c=["require"=>["laravel/framework"=>getenv("LARAVEL_CONSTRAINT")],"config"=>["audit"=>["block-insecure"=>false]]]; file_put_contents("composer.json",json_encode($c));'
+          composer install --no-interaction --prefer-dist --no-scripts
+          cp ../../app/Console/Commands/ResetQuizzesDemo.php .
+      - name: Test snapshot and restore
+        working-directory: tests/DemoReset
+        run: |
+          php -l ResetQuizzesDemo.php
+          php run.php > result.log 2>&1
+          cat result.log
+          grep -q 'ALL RESET CHECKS PASSED' result.log
